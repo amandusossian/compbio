@@ -28,7 +28,7 @@ def TaskC():
     Du = 1
     L = 128
     tStep = 0.01
-    tIter = 5000
+    tIter = 10000
     Dvs = np.array([2.3, 3, 5, 9])
     grid = np.zeros((2, L, L))
     initialValueU = a
@@ -45,7 +45,7 @@ def TaskC():
             plt.pcolor(grid[0,:,:])
             plt.colorbar()
             plt.clim([0, 6])
-            plt.title("steady state reached at time t = " + str(0.01*(i+1)))
+            plt.title("Steady state reached at time t = " + str(0.01*(i+1)))
             plt.show()
             
             break
