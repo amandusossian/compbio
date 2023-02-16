@@ -25,9 +25,9 @@ def initializeU2(eps0, u0, L, t):
 
 def updateU(u, r, q, L, t):
     for eps in range(L):
-        u[eps, t] = u[eps, t-1] - 2*(r*u[eps, t-1] - r/q*u[eps, t-1]**2 - u[eps, t-1]/(1+u[eps, t-1]))
+        u[eps, t] = u[eps, t-1] + 0.1*(r*u[eps, t-1] - r/q*u[eps, t-1]**2 - u[eps, t-1]/(1+u[eps, t-1]))
         if eps !=  0 and eps != L-1:
-            u[eps, t] = u[eps, t-1] + (u[eps + 1 , t-1] + u[eps - 1, t-1] - 2*u[eps, t-1] )
+            u[eps, t] = u[eps, t] + 0.1*(u[eps + 1 , t-1] + u[eps - 1, t-1] - 2*u[eps, t-1] )
     return u
 
 
@@ -49,23 +49,25 @@ def taskb():
     u_list = [u0_1, u0_2, u0_3]
     eps_list = [eps0_1, eps0_2, eps0_3]
 
-    # blablabla forloop för u och eps
-    u = initializeU(eps0_1, u0_1, L, tmax) 
-   
-    print(u0_1)
-    for t in range(1, tmax):
-        u = updateU(u, r, q, L, t)
-    print(u[:,1])
-    '''
-    plt.imshow(u, label = 't = 0')
-    plt.ylabel('$\\xi$')
-    plt.xlabel('$\\tau$')
-    plt.colorbar()
-    '''
-    plt.plot(range(L),u[:,7], label = 't = 0')
-    #plt.plot(range(L),u[:,10], label = 't = 10')
-    #plt.plot(range(L),u[:,20], label = 't = 20')
-    plt.show()
+    for i in range(3):
+        curr_eps = eps_list[i]
+        curr_u = u_list[i]
+        u = initializeU(curr_eps, curr_u, L, tmax) 
+    
+    
+        for t in range(1, tmax):
+            u = updateU(u, r, q, L, t)
+        
+        
+        plt.imshow(u, label = 't = 0')
+        plt.ylabel('$\\xi$')
+        plt.xlabel('$\\tau$')
+        plt.colorbar()
+        plt.show()
+        for i in range(100):
+            plt.plot(range(L),u[:,i], label = 't = ' + str(i*0.01))
+        
+        plt.show()
 
 taskb()
 
