@@ -21,32 +21,29 @@ def OrderParameter(thetas, N, t_iter):
 def TaskB():
     gamma = 0.1
     k_c = 2*gamma
-    t_iter = 200
+    t_iter = 1000
     tStepSize = 0.1
-    k_vals = np.array([k_c*0.5, k_c*1.01, k_c*4])
+    k_vals = np.array([k_c*0.5, k_c*1.2, k_c*10])
     n_vals = np.array([20, 100, 300])
 
-    k = k_vals[2]
-    n = n_vals[2]
+    fig, ax = plt.subplots(3, 3)
 
-    thetas = np.zeros([n, t_iter])
-    thetas[:, 0] = np.random.uniform(-np.pi/2, np.pi/2, size=n)
+    for i, k in enumerate(k_vals):
+        for j, n in enumerate(n_vals):
+            thetas = np.zeros([n, t_iter])
+            thetas[:, 0] = np.random.uniform(-np.pi/2, np.pi/2, size=n)
+            rand_freq = cauchy.rvs(loc=0, scale=gamma, size=n)
+            for t in range(1, t_iter):
+                thetas[:, t] = UpdateThetas(thetas, rand_freq, tStepSize, gamma, k, n, t)
 
-    for t in range(1, t_iter):
-        rand_freq = cauchy.rvs(loc=0, scale=gamma, size=n)
-        thetas[:, t] = UpdateThetas(thetas, rand_freq, tStepSize, gamma, k, n, t)
+            r_param = OrderParameter(thetas, n, t_iter)
+            ax[i, j].plot(np.linspace(0, t_iter, t_iter), r_param)
+            ax[i, j].set_title("K = " + str(k) + ", N = " + str(n))
+            if j == 0:
+                ax[i, j].set_ylabel("r")
+            if i == 2:
+                ax[i, j].set_xlabel("Iteration")
 
-    r_param = OrderParameter(thetas, n, t_iter)
-    plt.plot(np.linspace(0, t_iter, t_iter), r_param)
     plt.show()
 
-
 TaskB()
-
-
-def Test():
-    a = np.array([[1, 1, 3], [4, 5, 6]])
-    b = np.array([[1, 2, 3], [4, 5, 6]])
-    print((a == b).all())
-
-# Test()
