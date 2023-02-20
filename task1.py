@@ -28,6 +28,10 @@ def updateU(u, r, q, L, t):
         u[eps, t] = u[eps, t-1] + 0.1*(r*u[eps, t-1] - r/q*u[eps, t-1]**2 - u[eps, t-1]/(1+u[eps, t-1]))
         if eps !=  0 and eps != L-1:
             u[eps, t] = u[eps, t] + 0.1*(u[eps + 1 , t-1] + u[eps - 1, t-1] - 2*u[eps, t-1] )
+        elif eps==0:
+            u[eps, t] = u[eps, t] + 0.1*(u[1, t-1] - u[0, t-1])
+        else: 
+            u[eps, t] = u[eps, t] + 0.1*(u[eps-1, t-1] - u[eps, t-1])
     return u
 
 
