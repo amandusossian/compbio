@@ -16,12 +16,13 @@ def taska():
     print(u_star2_val)
     print(u_star3_val)
 
-taska()
+#taska()
 
 def initializeU(eps0, u0, L, t):
-    u = np.zeros((L, t))
+    u = np.zeros((L, t), dtype = np.float64)
     eps = np.arange(1, L+1)
     u[:, 0] = u0/(np.ones(L)+ np.exp( eps - eps0))
+    print(u[:,0])
     return u
 
 def initializeU2(eps0, u0, L, t):
@@ -43,16 +44,15 @@ def updateU(old_u, r, q, L, t):
     return old_u
 """   
 
-def updateU(u, r, q, L, t):
-    time_step = 0.01
-    for eps in range(L):
-        u[eps, t] = u[eps, t-1] + time_step*(r*u[eps, t-1] - r/q*np.power(u[eps, t-1], 2) - u[eps, t-1]/(1+u[eps, t-1]))
-        if eps !=  0 and eps != L-1:
-            u[eps, t] = u[eps, t] + time_step*(u[eps + 1 , t-1] + u[eps - 1, t-1] - 2*u[eps, t-1] )
-        elif eps==0:
-            u[eps, t] = u[eps, t] + time_step*(u[1, t-1] - u[0, t-1])
-        else: 
-            u[eps, t] = u[eps, t] + time_step*(u[eps-1, t-1] - u[eps, t-1])
+def updateU(u, r, q, L, tmax):
+    time_step = 0.4
+    new_u = np.zeros(L)
+    for t in range(1, tmax):
+        new_u = u[:, t-1] + time_step*(r*u[:, t-1]*(1-u[:, t-1]/q) - u[:, t-1]/(1+u[:, t-1]))
+        new_u[1:-1] = new_u[1:-1] + time_step*(u[2:, t-1] + u[:-2, t-1] - 2*u[1:-1, t-1] )
+        new_u[0] = new_u[0] + time_step*(u[1, t-1] - u[0, t-1])
+        new_u[L-1] = new_u[L-1] + time_step*(u[L-2, t-1] - u[L-1, t-1])
+        u[:,t] = new_u
     return u
 
 
@@ -60,50 +60,40 @@ def taskb():
     r =0.5
     q = 8
     L = 100
-    tmax = 100
-    #du/dtau = rho*u - rho/q *u**2 - u/(1+u ) + du^2/dxi^2
-    
-    # 1/2*(-1 + q + np.sqrt(2* q* (-2 + r) + r + q**2 *r)/np.sqrt(r))
-    #-(1-q)/2 + np.sqrt(q- q/r + (1-q)**2/2) 
-    #(r*(q - 1) + np.sqrt(r*(q**2*r + 2*q*r - 4*q + r)))/(2*r)
-
-    # Our values
-    u0_1 = -(1- q)/2 + np.sqrt(((1- q)/2)**2 - (1/r-1))
-    u0_2 =  -(1- q)/2 - np.sqrt(((1- q)/2)**2 - (1/r-1))
-    
+    tmax = 500
+  
+    u0_1 = -(1- q)/2 + np.sqrt(((1- q)/2)**2 - (q/r-q))
+    u0_2 =  -(1- q)/2 - np.sqrt(((1- q)/2)**2 - (q/r-q))
    
+    # Actual values
+    # u0_1 = 5.56155281280883
+    # u0_2 = 1.43844718719117
     
     eps0_1 = 20
     eps0_2 = 50
     eps0_3 = 50
 
-    # Our second values
-    u0_1 = 5.56155281280883
-    u0_2 = 1.43844718719117
-
-
     u_list = [u0_1, u0_2, 1.1*u0_2]
     eps_list = [eps0_1, eps0_2, eps0_3]
-    
 
-    for i in range(3):
+    for i in range(1):
         curr_eps = eps_list[i]
         curr_u = u_list[i]
+
+        u = initializeU(curr_eps, curr_u, L, tmax)  
+        u = updateU(u, r, q, L, tmax)
         
-        u = initializeU(curr_eps, curr_u, L, tmax) 
-    
-    
-        for t in range(1, tmax):
-            u = updateU(u, r, q, L, t)
-        
-        
-        plt.imshow(u, label = 't = 0')
-        plt.ylabel('$\\xi$')
-        plt.xlabel('$\\tau$')
-        plt.colorbar()
-        plt.show()
-        for i in range(100):
-            plt.plot(u[:,i], label = 't = ' + str(i*0.01))
+        if False:
+            plt.imshow(u)
+            plt.ylabel('$\\xi$')
+            plt.xlabel('$\\tau$')
+            plt.colorbar()
+            plt.show()
+        for i in np.arange(1, tmax):
+            plt.plot(u[:,i], label = 't = ' + str(i))
+            plt.ylabel('u')
+            plt.xlabel('$\\xi$')
+            #plt.legend()
         
         plt.show()
 
@@ -113,7 +103,7 @@ def taskc():
     r =1/2
     q = 8
     L = 100
-    tmax = 100
+    tmax = 500
     #du/dtau = rho*u - rho/q *u**2 - u/(1+u ) + du^2/dxi^2
     u0_1 = -(1-q)/2 + np.sqrt(q- q/r + (1-q)**2/2) 
     eps0 = 50
@@ -133,13 +123,7 @@ def taskc():
 #taskc()
 
 def test():
-    arr = np.zeros((5,5))
-    for i in range(5):
-        for j in range(5):
-            arr[i,j] = i+j
-    print(arr)
-    plt.imshow(arr)
-    plt.colorbar()
-    plt.show()
+    a =np.array([1,2,3,4])
+    print(a[1:-1])
 
-    
+#test()
