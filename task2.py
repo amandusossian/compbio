@@ -43,37 +43,62 @@ def TaskC():
     initialValueV = b/a
     grid[0,:,:] =  (np.ones((L, L))+ np.random.normal(0, 0.1, (L, L)))*initialValueU
     grid[1,:,:] =  (np.ones((L, L))+ np.random.normal(0, 0.1, (L, L)))*initialValueV
-    Dv = Dvs[3]
+    for Dv in Dvs:
+        #Dv = Dvs[3]
 
-    # Dvs[0] sets range to 3
-    # Dvs[1] sets range to 4.5
-    # Dvs[2] sets range to 7.5
-    # Dvs[3] sets range to 12
-    temp_u = np.zeros((L, L))
-    i = 0
-    while i< tIter:        
-        grid = UpdateConcentrations(grid, tStep, Du, Dv, L, a, b)
-        if (temp_u==grid[0,:,:]).all():
-            print("u is constant at time step " + str(i))
-            plt.pcolor(grid[0,:,:])
-            plt.colorbar()
-            plt.clim([2.9, 3.1])
-            plt.title("Steady state reached at time t = " + str(0.01*(i+1)))
-            plt.show()
-            
-            break
-        temp_u = grid[0,:,:]
-        if i%100 == 0:
-            print(i)
-        if (i+1)%5000 == 0:
-            
-            plt.pcolor(grid[0,:,:])
-            plt.colorbar()
-            plt.clim([0, 12])
-            plt.title("u at time step " + str(i+1))
-            plt.show()
-        i+=1
-            
+        # Dvs[0] sets range to 3
+        # Dvs[1] sets range to 4.5
+        # Dvs[2] sets range to 7.5
+        # Dvs[3] sets range to 12
+        temp_u = np.zeros((L, L))
+        i = 0
+        while i< tIter:
+            grid = UpdateConcentrations(grid, tStep, Du, Dv, L, a, b)
+            '''
+            if (temp_u==grid[0,:,:]).all():
+                print("u is constant at time step " + str(i))
+                plt.pcolor(grid[0,:,:])
+                plt.colorbar()
+                plt.clim([2.9, 3.1])
+                plt.title("Steady state reached at time t = " + str(0.01*(i+1)))
+                plt.show()
+
+                break'''
+            temp_u = grid[0,:,:]
+
+            #if i%100 == 0:
+                #print(i)
+            if i == 1000:
+                gridSaved = np.copy(grid)
+            if (i+1) == 10000:
+                print("Max prev grid: " + str(np.max(gridSaved[0, :, :])), "Min prev grid: " + str(np.min(gridSaved[0, :, :])))
+                print("Max curr grid: " + str(np.max(grid[0, :, :])), "Min prev grid: " + str(np.min(grid[0, :, :])))
+                fig, axes = plt.subplots(1, 2)
+                axes[0].set_axis_off()
+                axes[0].set_title("t = 1000" + ", Dv = " + str(Dv))
+                im = axes[0].imshow(gridSaved[0,:,:], vmax=12, vmin=0)
+                axes[1].set_axis_off()
+                axes[1].set_title("t = 10000" + ", Dv = " + str(Dv))
+                im = axes[1].imshow(grid[0, :, :], vmax=12, vmin=0)
+                cbar = fig.colorbar(im, ax=axes.ravel().tolist(), shrink=0.60)
+
+                #cbar.set_ticks(np.arange(0, 1.1, 0.5))
+                #cbar.set_ticklabels(['low', 'medium', 'high'])
+
+                plt.show()
+                '''
+                plt.subplot(1, 2, 1)
+                plt.pcolor(grid[0,:,:])
+                plt.subplot(1, 2, 2)
+                plt.pcolor(gridSaved[0, :, :])
+                plt.subplots_adjust(right=0.8)
+                plt.colorbar()
+                plt.clim([0, 12])
+                plt.title("u at time step " + str(i+1))
+    
+                plt.show()'''
+            i+=1
+
 TaskC()
 def Test():
     L = 3
